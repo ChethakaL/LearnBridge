@@ -10,6 +10,11 @@ import ScheduleScreen from './screens/ScheduleScreen';
 import MaterialScreen from './screens/MaterialScreen';
 import MarksScreen from './screens/MarksScreen';
 import StudentProfile from './screens/StudentProfile';
+import StaffHomeScreen from './screens/StaffHomeScreen';
+import StaffScheduleScreen from './screens/StaffScheduleScreen';
+import StaffMarkScreen from './screens/StaffMarkScreen';
+import StaffProfile from './screens/StaffProfile';
+import StaffMaterialScreen from './screens/StaffMaterialScreen';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -36,10 +41,16 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="StaffHome" component={StaffHomeScreen} />
         <Stack.Screen name="Schedule" component={ScheduleScreen}/>
+        <Stack.Screen name="StaffSchedule" component={StaffScheduleScreen}/>
         <Stack.Screen name="Material" component={MaterialScreen}/>
+        <Stack.Screen name="StaffMaterial" component={StaffMaterialScreen}/>
         <Stack.Screen name="Marks" component={MarksScreen}/>
+        <Stack.Screen name="StaffMarks" component={StaffMarkScreen}/>
         <Stack.Screen name="StudentProfile" component={StudentProfile}/>
+        <Stack.Screen name="StaffProfile" component={StaffProfile}/>
+
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -7,11 +7,11 @@ import superagent from 'superagent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-const StudentProfile = () => {
+const StaffProfile = () => {
     const navigation = useNavigation();
 
     const [profileData, setProfileData] = useState({
-        studentId: '',
+        staffId: '',
         username: '',
         email: '',
         name: '',
@@ -20,8 +20,8 @@ const StudentProfile = () => {
         nic:'',
         faculty:'',
         dob: '',
-        degree: '',
-        batch: '',
+        role:'',
+        nic: '',
     });
 
     useEffect(() => {
@@ -29,7 +29,7 @@ const StudentProfile = () => {
           try {
             const token = await AsyncStorage.getItem('token');
       
-            const response = await fetch(`http://192.168.1.5:3001/api/user/profile`, {
+            const response = await fetch(`http://192.168.1.5:3001/api/staff/profile`, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ const StudentProfile = () => {
             <FingerPrintIcon  size={40} color='#0075FF'/>
             <TextInput 
                 style={styles.textInput}
-                value={profileData.studentId}
+                value={profileData.staffId}
             />
         </View>
         <View style={styles.TextInputContainer}>
@@ -110,14 +110,7 @@ const StudentProfile = () => {
             <AcademicCapIcon  size={40} color='#0075FF'/>
             <TextInput 
                 style={styles.textInput}
-                value={profileData.degree}
-            />
-        </View>
-        <View style={styles.TextInputContainer}>
-            <TagIcon  size={40} color='#0075FF'/>
-            <TextInput 
-                style={styles.textInput}
-                value={profileData.batch}
+                value={profileData.role}
             />
         </View>
       </View>
@@ -162,4 +155,4 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
 })
-export default StudentProfile
+export default StaffProfile
