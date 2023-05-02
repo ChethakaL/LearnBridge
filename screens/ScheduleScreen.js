@@ -1,10 +1,46 @@
-import { View, Text, SafeAreaView, StyleSheet } from 'react-native'
-import React, { useLayoutEffect } from 'react'
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
+import React, { useLayoutEffect, useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import NavigationComponent from '../components/NavigationComponent';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const ScheduleScreen = () => {
     const navigation = useNavigation();
+
+    const [selectedDay, setSelectedDay] = useState('Mon');
+    const [scheduleData, setScheduleData] = useState([])
+
+    useEffect(() => {
+      const fetchProfile = async () => {
+        try {
+          const token = await AsyncStorage.getItem('token');
+    
+          const response = await fetch(`http://192.168.1.5:3001/api/schedule/userschedule?day=${selectedDay}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+    
+          const data = await response.json();
+          const formattedData = data.map((item) => ({
+            day: item.day,
+            startTime: item.startTime,
+            endTime: item.endTime,
+            moduleName: item.moduleName,
+            batch: item.batch,
+            degree:item.degree
+          }));
+          setScheduleData(formattedData);
+        } catch (error) {
+          console.error('Error fetching profile data:', error);
+        }
+      };
+    
+      fetchProfile();
+    }, [selectedDay]);
 
       useLayoutEffect(() => {
         navigation.setOptions({
@@ -12,53 +48,50 @@ const ScheduleScreen = () => {
         })
     }, [])
   return (
-    <View style={{height:'100%',flexDirection:'column', justifyContent:'flex-end'}}>
-      <Text style={styles.Heading}>Lecture Schedule</Text>
-      {/* Date Container */}
-      <View style={styles.DateContainer}>
-        <View style={[{width:'19%', height:'100%', flexDirection:'row',alignItems:'center', justifyContent:'center',backgroundColor:'#0075FF',}]}>
-            <Text style={[styles.date,{color:'white'}]}>Mon</Text>
+    <View style={{height:'100%'}}>
+      <ScrollView 
+            style={{ height: '78%', marginTop:40, }}
+            contentContainerStyle={{
+            flexGrow: 1,
+            paddingVertical: 15,
+            }}
+            verticle
+            showsVerticalScrollIndicator={false}>
+        <Text style={styles.Heading}>Lecture Schedule</Text>
+        <View style={styles.DateContainer}>
+          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((day, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                {
+                  width: '19%',
+                  height: '100%',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: day === selectedDay ? '#0075FF' : 'transparent',
+                },
+              ]}
+              onPress={() => setSelectedDay(day)}
+            >
+              <Text style={[styles.date, { color: day === selectedDay ? 'white' : 'black' }]}>{day}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
-        <View style={{width:'18%'}}>
-            <Text style={styles.date}>Tue</Text>
+        {/* Time Schedule */}
+        <View style={{marginTop:40}}>
+        {scheduleData.map((data, index) => (
+            <View style={styles.detailContainer} key={index}>
+                <View style={styles.timeContainer}>
+                    <Text style={{fontFamily:'Poppins-SemiBold', color:'white', fontSize:25,}}>{data.startTime}-{data.endTime}</Text>
+                </View>
+                <View style={styles.moduleContainer}>
+                    <Text style={{width:'90%',fontFamily:'Poppins-SemiBold', color:'white', fontSize:25,}}>{data.moduleName}</Text>
+                </View>
+            </View>
+          ))}
         </View>
-        <View style={{width:'18%'}}>
-            <Text style={styles.date}>Wed</Text>
-        </View>
-        <View style={{width:'18%'}}>
-            <Text style={styles.date}>Thur</Text>
-        </View>
-        <View style={{width:'18%'}}>
-            <Text style={styles.date}>Fri</Text>
-        </View>
-      </View>
-      {/* Time Schedule */}
-      <View style={{width:'100%',marginTop:40,marginBottom:40,}}>
-         <View style={styles.detailContainer}>
-            <View style={styles.timeContainer}>
-                <Text style={{fontFamily:'Poppins-SemiBold', color:'white', fontSize:25,}}>9-11</Text>
-            </View>
-            <View style={styles.moduleContainer}>
-                <Text style={{width:'90%',fontFamily:'Poppins-SemiBold', color:'white', fontSize:25,}}>Mobile Application Development</Text>
-            </View>
-         </View>
-         <View style={styles.detailContainer}>
-            <View style={styles.timeContainer}>
-                <Text style={{fontFamily:'Poppins-SemiBold', color:'white', fontSize:25,}}>9-11</Text>
-            </View>
-            <View style={styles.moduleContainer}>
-                <Text style={{width:'90%',fontFamily:'Poppins-SemiBold', color:'white', fontSize:25,}}>Web Application Development</Text>
-            </View>
-         </View>
-         <View style={styles.detailContainer}>
-            <View style={styles.timeContainer}>
-                <Text style={{fontFamily:'Poppins-SemiBold', color:'white', fontSize:25,}}>9-11</Text>
-            </View>
-            <View style={styles.moduleContainer}>
-                <Text style={{width:'90%',fontFamily:'Poppins-SemiBold', color:'white', fontSize:25,}}>Sofware Engineering II</Text>
-            </View>
-         </View>
-      </View>
+      </ScrollView>
       <NavigationComponent/>
     </View>
   )
